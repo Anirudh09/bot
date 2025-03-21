@@ -11,14 +11,30 @@ Write-Host "The current day is: $currentDayOfYear"
 
 # If the random day matches the current day, run the script
 if ($randomDay -eq $currentDayOfYear) {
-    $gitBashPath = "C:\Program Files\Git\bin\bash.exe"  # Adjust this path if needed
 
-	# Path to the script you want to run
-	$bashScriptPath = "Path\To\bot.sh"  # Modify the path to your bot.sh script
+	# Set commit message with current date
+	$info = "Commit: $(Get-Date)"
 
-	$process = Start-Process -FilePath $gitBashPath -ArgumentList "$bashScriptPath" -WindowStyle Hidden -PassThru
+	# Append the commit info to the output.txt file
+	$info | Out-File -Append -FilePath "path\to\output_file"
 
-	$process.WaitForExit()
+	# Output the commit info to the console
+	Write-Host $info
+	Write-Host ""
+	
+	$gitRepoPath = "path\to\git_repo"
+    Set-Location -Path $gitRepoPath
 
+	# Detect current branch (main, master, etc.)
+	$branch = git rev-parse --abbrev-ref HEAD
+
+	# Stage the file and commit changes
+	git add output.txt
+	git commit -m $info
+
+	# Push the changes to the remote repository
+	git push origin $branch
 	Write-Host "Git Push Finished"
 }
+
+exit
